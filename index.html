@@ -81,6 +81,10 @@
       color: #f2f2f2;
     }
 
+    .empty {
+      visibility: hidden;
+    }
+
     .past {
       background-color: #ff5c1f;
       color: #000;
@@ -210,6 +214,14 @@
         const grid = document.createElement("div");
         grid.classList.add("month-grid");
 
+        // Leere Felder am Monatsanfang auffüllen
+        const firstDayOfWeek = (firstDate.getDay() + 6) % 7; // Montag = 0
+        for (let i = 0; i < firstDayOfWeek; i++) {
+          const empty = document.createElement("div");
+          empty.classList.add("day", "empty");
+          grid.appendChild(empty);
+        }
+
         for (const date of days) {
           const dayEl = document.createElement("div");
           dayEl.classList.add("day");
@@ -232,3 +244,4 @@
   </script>
 </body>
 </html>
+
