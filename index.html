@@ -241,7 +241,9 @@
         for (const date of days) {
           const dayEl = document.createElement("div");
           dayEl.classList.add("day");
-          if (date <= today) dayEl.classList.add("past");
+          const dateOnly = new Date(date.getFullYear(), date.getMonth(), date.getDate());
+          const todayOnly = new Date(today.getFullYear(), today.getMonth(), today.getDate());
+          if (dateOnly < todayOnly) dayEl.classList.add("past");
           const dayOfWeek = date.getDay();
           if (dayOfWeek === 0 || dayOfWeek === 6) dayEl.classList.add("weekend");
           if (isHoliday(date) && dayOfWeek >= 1 && dayOfWeek <= 5) dayEl.classList.add("holiday");
