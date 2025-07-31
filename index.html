@@ -31,20 +31,18 @@
       color: #f2f2f2;
     }
 
-    #calendar {
-      display: flex;
-      flex-wrap: wrap;
-      justify-content: center;
-      max-width: 95vw;
+    #calendar-wrapper {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
       gap: 30px;
-      margin: 20px 0;
+      max-width: 95vw;
+      margin: 20px;
     }
 
     .month {
       border: 1px solid #444;
       padding: 10px;
       border-radius: 8px;
-      min-width: 230px;
       background-color: rgba(255, 255, 255, 0.03);
     }
 
@@ -99,15 +97,15 @@
   <div id="countdown">Lädt...</div>
   <div id="remaining"></div>
   <div id="minutesLeft"></div>
-  <div id="calendar"></div>
+  <div id="calendar-wrapper"></div>
   <footer>bis zur Entscheidung</footer>
 
   <script>
-    const startDate = new Date("2025-08-01T00:00:00");
-    const targetDate = new Date("2025-12-31T20:15:00");
+    const startDate = new Date("2025-07-29T16:36:00");
+    const targetDate = new Date("2026-02-05T12:00:00");
 
     const countdownEl = document.getElementById("countdown");
-    const calendarEl = document.getElementById("calendar");
+    const calendarWrapper = document.getElementById("calendar-wrapper");
     const remainingEl = document.getElementById("remaining");
     const minutesLeftEl = document.getElementById("minutesLeft");
 
@@ -152,7 +150,7 @@
         loopDate.setDate(loopDate.getDate() + 1);
       }
 
-      calendarEl.innerHTML = "";
+      calendarWrapper.innerHTML = "";
 
       for (const key in monthMap) {
         const days = monthMap[key];
@@ -181,7 +179,7 @@
         }
 
         monthDiv.appendChild(grid);
-        calendarEl.appendChild(monthDiv);
+        calendarWrapper.appendChild(monthDiv);
       }
     }
 
