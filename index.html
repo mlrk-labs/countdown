@@ -53,6 +53,16 @@
       color: #ff5c1f;
     }
 
+    .weekday-row {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 5px;
+      margin-bottom: 5px;
+      font-size: 0.75em;
+      color: #aaa;
+      text-align: center;
+    }
+
     .month-grid {
       display: grid;
       grid-template-columns: repeat(7, 1fr);
@@ -76,6 +86,14 @@
       color: #000;
       text-decoration: line-through;
       opacity: 0.5;
+    }
+
+    .weekend {
+      background-color: rgba(255, 92, 31, 0.3);
+    }
+
+    .holiday {
+      background-color: rgba(255, 255, 0, 0.3);
     }
 
     #remaining, #minutesLeft {
@@ -109,6 +127,14 @@
     const remainingEl = document.getElementById("remaining");
     const minutesLeftEl = document.getElementById("minutesLeft");
 
+    const holidays = [
+      "2025-10-03",
+      "2025-12-25",
+      "2025-12-26",
+      "2026-01-01",
+      "2026-01-06"
+    ];
+
     function updateCountdown() {
       const now = new Date();
       let diff = targetDate - now;
@@ -131,6 +157,11 @@
       countdownEl.textContent = `${months} Monate ${days} Tage ${hours} Stunden ${minutes} Minuten ${seconds} Sekunden`;
       remainingEl.textContent = `Verbleibende Tage: ${totalDays}`;
       minutesLeftEl.textContent = `Verbleibende Minuten: ${totalMinutes}`;
+    }
+
+    function isHoliday(date) {
+      const iso = date.toISOString().split("T")[0];
+      return holidays.includes(iso);
     }
 
     function generateCalendar() {
@@ -165,15 +196,27 @@
         title.textContent = monthName;
         monthDiv.appendChild(title);
 
+        const weekdays = document.createElement("div");
+        weekdays.classList.add("weekday-row");
+        const weekdayLabels = ["M", "D", "M", "D", "F", "S", "S"];
+        weekdayLabels.forEach((label, i) => {
+          const dayLabel = document.createElement("div");
+          dayLabel.textContent = label;
+          if (i >= 5) dayLabel.style.backgroundColor = "rgba(255,92,31,0.2)";
+          weekdays.appendChild(dayLabel);
+        });
+        monthDiv.appendChild(weekdays);
+
         const grid = document.createElement("div");
         grid.classList.add("month-grid");
 
         for (const date of days) {
           const dayEl = document.createElement("div");
           dayEl.classList.add("day");
-          if (date <= today) {
-            dayEl.classList.add("past");
-          }
+          if (date <= today) dayEl.classList.add("past");
+          const dayOfWeek = date.getDay();
+          if (dayOfWeek === 0 || dayOfWeek === 6) dayEl.classList.add("weekend");
+          if (isHoliday(date) && dayOfWeek >= 1 && dayOfWeek <= 5) dayEl.classList.add("holiday");
           dayEl.textContent = date.getDate();
           grid.appendChild(dayEl);
         }
