@@ -7,8 +7,8 @@
     body {
       margin: 0;
       padding: 0;
-      background: linear-gradient(to bottom, #000000, #191970); /* Schwarz zu Dunkelblau */
-      color: #f24405; /* Orange-Rot aus Loop Tour */
+      background: linear-gradient(to bottom, #000000, #191970);
+      color: #f24405;
       font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
       display: flex;
       flex-direction: column;
@@ -21,7 +21,7 @@
       margin-top: 40px;
       font-size: 3em;
       letter-spacing: 0.1em;
-      color: #ff5c1f; /* kräftiges Orange */
+      color: #ff5c1f;
     }
 
     #countdown {
@@ -32,16 +32,38 @@
     }
 
     #calendar {
-      display: grid;
-      grid-template-columns: repeat(7, 1fr);
-      gap: 6px;
-      max-width: 90vw;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      max-width: 95vw;
+      gap: 30px;
       margin: 20px 0;
     }
 
+    .month {
+      border: 1px solid #444;
+      padding: 10px;
+      border-radius: 8px;
+      min-width: 230px;
+      background-color: rgba(255, 255, 255, 0.03);
+    }
+
+    .month-name {
+      text-align: center;
+      font-size: 1.2em;
+      margin-bottom: 8px;
+      color: #ff5c1f;
+    }
+
+    .month-grid {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 5px;
+    }
+
     .day {
-      width: 36px;
-      height: 36px;
+      width: 30px;
+      height: 30px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -81,9 +103,8 @@
   <footer>bis zur Entscheidung</footer>
 
   <script>
-    // 🗓 Hier Start- und Zieldatum einstellen:
-    const startDate = new Date("2025-07-29T16:36:00");
-    const targetDate = new Date("2026-02-05T12:00:00"); // Tag + Uhrzeit
+    const startDate = new Date("2025-08-01T00:00:00");
+    const targetDate = new Date("2025-12-31T20:15:00");
 
     const countdownEl = document.getElementById("countdown");
     const calendarEl = document.getElementById("calendar");
@@ -101,10 +122,9 @@
         return;
       }
 
-      const totalSeconds = Math.floor(diff / 1000);
       const totalMinutes = Math.floor(diff / (1000 * 60));
       const totalDays = Math.floor(diff / (1000 * 60 * 60 * 24));
-      const months = Math.floor(totalDays / 30); // grobe Näherung
+      const months = Math.floor(totalDays / 30);
       const days = totalDays % 30;
       const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
       const minutes = Math.floor((diff / (1000 * 60)) % 60);
@@ -118,17 +138,50 @@
     function generateCalendar() {
       const today = new Date();
       let loopDate = new Date(startDate);
-      calendarEl.innerHTML = "";
+      const monthMap = {};
 
       while (loopDate <= targetDate) {
-        const dayEl = document.createElement("div");
-        dayEl.classList.add("day");
-        if (loopDate.toDateString() <= today.toDateString()) {
-          dayEl.classList.add("past");
+        const year = loopDate.getFullYear();
+        const month = loopDate.getMonth();
+        const key = `${year}-${month}`;
+
+        if (!monthMap[key]) {
+          monthMap[key] = [];
         }
-        dayEl.textContent = loopDate.getDate();
-        calendarEl.appendChild(dayEl);
+        monthMap[key].push(new Date(loopDate));
         loopDate.setDate(loopDate.getDate() + 1);
+      }
+
+      calendarEl.innerHTML = "";
+
+      for (const key in monthMap) {
+        const days = monthMap[key];
+        const firstDate = days[0];
+        const monthName = firstDate.toLocaleString("de-DE", { month: "long", year: "numeric" });
+
+        const monthDiv = document.createElement("div");
+        monthDiv.classList.add("month");
+
+        const title = document.createElement("div");
+        title.classList.add("month-name");
+        title.textContent = monthName;
+        monthDiv.appendChild(title);
+
+        const grid = document.createElement("div");
+        grid.classList.add("month-grid");
+
+        for (const date of days) {
+          const dayEl = document.createElement("div");
+          dayEl.classList.add("day");
+          if (date <= today) {
+            dayEl.classList.add("past");
+          }
+          dayEl.textContent = date.getDate();
+          grid.appendChild(dayEl);
+        }
+
+        monthDiv.appendChild(grid);
+        calendarEl.appendChild(monthDiv);
       }
     }
 
