@@ -1,0 +1,140 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+  <meta charset="UTF-8">
+  <title>Countdown</title>
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      background: linear-gradient(to bottom, #000000, #191970); /* Schwarz zu Dunkelblau */
+      color: #f24405; /* Orange-Rot aus Loop Tour */
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: start;
+      min-height: 100vh;
+    }
+
+    h1 {
+      margin-top: 40px;
+      font-size: 3em;
+      letter-spacing: 0.1em;
+      color: #ff5c1f; /* kräftiges Orange */
+    }
+
+    #countdown {
+      font-size: 2em;
+      margin: 10px 0 20px 0;
+      text-align: center;
+      color: #f2f2f2;
+    }
+
+    #calendar {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 6px;
+      max-width: 90vw;
+      margin: 20px 0;
+    }
+
+    .day {
+      width: 36px;
+      height: 36px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border: 1px solid #ff5c1f;
+      font-size: 0.8em;
+      border-radius: 4px;
+      color: #f2f2f2;
+    }
+
+    .past {
+      background-color: #ff5c1f;
+      color: #000;
+      text-decoration: line-through;
+      opacity: 0.5;
+    }
+
+    #remaining, #minutesLeft {
+      font-size: 1.3em;
+      margin: 8px;
+      color: #f2f2f2;
+    }
+
+    footer {
+      margin-top: auto;
+      padding: 30px;
+      font-size: 1.2em;
+      color: #888;
+    }
+  </style>
+</head>
+<body>
+  <h1>NOCH</h1>
+  <div id="countdown">Lädt...</div>
+  <div id="remaining"></div>
+  <div id="minutesLeft"></div>
+  <div id="calendar"></div>
+  <footer>bis zur Entscheidung</footer>
+
+  <script>
+    // 🗓 Hier Start- und Zieldatum einstellen:
+    const startDate = new Date("2025-08-01T00:00:00");
+    const targetDate = new Date("2025-12-31T20:15:00"); // Tag + Uhrzeit
+
+    const countdownEl = document.getElementById("countdown");
+    const calendarEl = document.getElementById("calendar");
+    const remainingEl = document.getElementById("remaining");
+    const minutesLeftEl = document.getElementById("minutesLeft");
+
+    function updateCountdown() {
+      const now = new Date();
+      let diff = targetDate - now;
+
+      if (diff <= 0) {
+        countdownEl.textContent = "🎉 Der Moment ist da!";
+        remainingEl.textContent = "";
+        minutesLeftEl.textContent = "";
+        return;
+      }
+
+      const totalSeconds = Math.floor(diff / 1000);
+      const totalMinutes = Math.floor(diff / (1000 * 60));
+      const totalDays = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const months = Math.floor(totalDays / 30); // grobe Näherung
+      const days = totalDays % 30;
+      const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+      const minutes = Math.floor((diff / (1000 * 60)) % 60);
+      const seconds = Math.floor((diff / 1000) % 60);
+
+      countdownEl.textContent = `${months} Monate ${days} Tage ${hours} Stunden ${minutes} Minuten ${seconds} Sekunden`;
+      remainingEl.textContent = `Verbleibende Tage: ${totalDays}`;
+      minutesLeftEl.textContent = `Verbleibende Minuten: ${totalMinutes}`;
+    }
+
+    function generateCalendar() {
+      const today = new Date();
+      let loopDate = new Date(startDate);
+      calendarEl.innerHTML = "";
+
+      while (loopDate <= targetDate) {
+        const dayEl = document.createElement("div");
+        dayEl.classList.add("day");
+        if (loopDate.toDateString() <= today.toDateString()) {
+          dayEl.classList.add("past");
+        }
+        dayEl.textContent = loopDate.getDate();
+        calendarEl.appendChild(dayEl);
+        loopDate.setDate(loopDate.getDate() + 1);
+      }
+    }
+
+    setInterval(updateCountdown, 1000);
+    updateCountdown();
+    generateCalendar();
+  </script>
+</body>
+</html>
